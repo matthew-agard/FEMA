@@ -3,7 +3,9 @@ package com.appdev.matthewa.fema;
 import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
@@ -13,14 +15,29 @@ import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
+import com.google.firebase.auth.AuthResult;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
+
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
+
 public class LoginActivity extends AppCompatActivity {
+    private FirebaseDatabase database;
+    private FirebaseAuth mAuth;
     private Spinner userSpinner;
-    private EditText email, password;
+    private EditText username, password;
     private Button login;
     private TextView createAccount;
     private int userTypePosition;
-    private boolean validLogin;
-    private FEMADatabase db;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -28,7 +45,8 @@ public class LoginActivity extends AppCompatActivity {
         setContentView(R.layout.login_page);
         setTitle("Login");
 
-        db = FEMADatabase.getDatabase(this);
+        database = FirebaseDatabase.getInstance();
+        mAuth = FirebaseAuth.getInstance();
 
         userSpinner = findViewById(R.id.user_type);
         final ArrayAdapter adapter = ArrayAdapter.createFromResource(this, R.array.user_type, android.R.layout.simple_spinner_dropdown_item);
@@ -46,14 +64,14 @@ public class LoginActivity extends AppCompatActivity {
             }
         });
 
-        email = findViewById(R.id.user_username);
+        username = findViewById(R.id.user_username);
         password = findViewById(R.id.user_password);
 
         login = findViewById(R.id.login);
         login.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                signInUser(email.getText().toString(), password.getText().toString());
+                signInUser(username.getText().toString() + "@fema.org", password.getText().toString());
             }
         });
 
@@ -64,90 +82,6 @@ public class LoginActivity extends AppCompatActivity {
                 createUserAccount();
             }
         });
-    }
-
-    private class AgentLoginTask extends AsyncTask<User, Void, Boolean> {
-        @Override
-        protected Boolean doInBackground(User... users) {
-            User user = db.userDAO().findAgentLogin(users[0].getEmail(), users[0].getPassword());
-
-            if(user == null)
-                validLogin = false;
-            else {
-                validLogin = true;
-            }
-
-            return validLogin;
-        }
-
-        @Override
-        protected void onPostExecute(Boolean validLogin) {
-            if (validLogin) {
-                Toast.makeText(LoginActivity.this, "Login successful", Toast.LENGTH_SHORT).show();
-                String customerUsername = email.getText().toString();
-                email.getText().clear();
-                password.getText().clear();
-                Intent i = new Intent(LoginActivity.this, AgentHomeActivity.class);
-                i.putExtra("Username", customerUsername);
-                startActivity(i);
-            }
-            else
-                Toast.makeText(LoginActivity.this, "Login failed", Toast.LENGTH_SHORT).show();
-        }
-    }
-
-    private class CenterLoginTask extends AsyncTask<Center, Void, Boolean> {
-        @Override
-        protected Boolean doInBackground(Center... centers) {
-            Center center = db.centerDAO().findCenterLogin(centers[0].getEmail(), centers[0].getPassword());
-
-            if(center == null)
-                validLogin = false;
-            else
-                validLogin = true;
-
-            return validLogin;
-        }
-
-        @Override
-        protected void onPostExecute(Boolean validLogin) {
-            if (validLogin) {
-                Toast.makeText(LoginActivity.this, "Login successful", Toast.LENGTH_SHORT).show();
-                email.getText().clear();
-                password.getText().clear();
-                Intent i = new Intent(LoginActivity.this, CenterHomeActivity.class);
-                startActivity(i);
-            }
-            else
-                Toast.makeText(LoginActivity.this, "Login failed", Toast.LENGTH_SHORT).show();
-        }
-    }
-
-    private class DriverLoginTask extends AsyncTask<User, Void, Boolean> {
-        @Override
-        protected Boolean doInBackground(User... users) {
-            User user = db.userDAO().findDriverLogin(users[0].getEmail(), users[0].getPassword());
-
-            if(user == null)
-                validLogin = false;
-            else
-                validLogin = true;
-
-            return validLogin;
-        }
-
-        @Override
-        protected void onPostExecute(Boolean validLogin) {
-            if (validLogin) {
-                Toast.makeText(LoginActivity.this, "Login successful", Toast.LENGTH_SHORT).show();
-                email.getText().clear();
-                password.getText().clear();
-                Intent i = new Intent(LoginActivity.this, DriverHomeActivity.class);
-                startActivity(i);
-            }
-            else
-                Toast.makeText(LoginActivity.this, "Login failed", Toast.LENGTH_SHORT).show();
-        }
     }
 
     private void verifyAccountCreation(int userTypePosition) {
@@ -163,7 +97,7 @@ public class LoginActivity extends AppCompatActivity {
     }
 
     private void createUserAccount() {
-        email.getText().clear();
+        username.getText().clear();
         password.getText().clear();
 
         if(userTypePosition == 0) {
@@ -176,14 +110,66 @@ public class LoginActivity extends AppCompatActivity {
         }
     }
 
-    private void signInUser(String email, String password) {
-        if(userTypePosition == 0)
-            new AgentLoginTask().execute(new User(email, password));
+    private void signInUser(final String usernameStr, String passwordStr) {
+        mAuth.signInWithEmailAndPassword(usernameStr, passwordStr).addOnCompleteListener(LoginActivity.this, new OnCompleteListener<AuthResult>() {
+            @Override
+            public void onComplete(@NonNull Task<AuthResult> task) {
+                if (task.isSuccessful()) {
+                    if(userTypePosition == 0) {
+                        DatabaseReference getCenter = database.getReference("Community Centers/" + username.getText().toString());
+                        verifyUser(getCenter);
+                    }
 
-        else if (userTypePosition == 1)
-            new CenterLoginTask().execute(new Center(email, password));
+                    else if (userTypePosition == 1) {
+                        DatabaseReference getDriver = database.getReference("Drivers/"  + username.getText().toString());
+                        verifyUser(getDriver);
+                    }
 
-        else
-            new DriverLoginTask().execute(new User(email, password));
+                    else {
+                        DatabaseReference getAgent = database.getReference("Agents/" + username.getText().toString());
+                        verifyUser(getAgent);
+                    }
+                }
+
+                else
+                    Toast.makeText(LoginActivity.this, "Authentication failed.", Toast.LENGTH_SHORT).show();
+            }
+        });
+    }
+
+    private void verifyUser(DatabaseReference userReference) {
+        userReference.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                Map<String, String> userData = (Map) dataSnapshot.getValue();
+                if(userData != null) {
+                    if(userData.get("password").equals(password.getText().toString())) {
+                        username.getText().clear();
+                        password.getText().clear();
+
+                        if(userTypePosition == 0) {
+                            Intent i = new Intent(LoginActivity.this, CenterHomeActivity.class);
+                            startActivity(i);
+                        }
+                        else if (userTypePosition == 1) {
+                            Intent i = new Intent(LoginActivity.this, DriverHomeActivity.class);
+                            startActivity(i);
+                        }
+                        else {
+                            Intent i = new Intent(LoginActivity.this, AgentHomeActivity.class);
+                            startActivity(i);
+                        }
+                    }
+
+                    else
+                        Toast.makeText(LoginActivity.this, "Invalid login credentials.", Toast.LENGTH_SHORT).show();
+                }
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+                System.out.println("The read failed: " + databaseError.getCode());
+            }
+        });
     }
 }

@@ -24,7 +24,6 @@ public class CenterHomeActivity extends AppCompatActivity {
     private TextView neededFood, neededClothes, neededWater;
     private EditText sentFood, sentClothes, sentWater;
     private Button submitDonations, logout;
-    private FEMADatabase db;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -32,13 +31,10 @@ public class CenterHomeActivity extends AppCompatActivity {
         setContentView(R.layout.center_home_page);
         setTitle("Center Home Page");
 
-        db = FEMADatabase.getDatabase(this);
-
         neededFood = findViewById(R.id.food_needed);
         neededClothes = findViewById(R.id.clothes_needed);
         neededWater = findViewById(R.id.water_needed);
         loadLocations = findViewById(R.id.show_all_disaster_locations);
-        new RetrieveAllLocations().execute();
 
         loadLocations.setChoiceMode(ListView.CHOICE_MODE_SINGLE);
         loadLocations.setBackgroundColor(getResources().getColor(android.R.color.background_light));
@@ -75,7 +71,7 @@ public class CenterHomeActivity extends AppCompatActivity {
         submitDonations.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                new UpdateLocationNeeds().execute();
+
             }
         });
 
@@ -88,54 +84,24 @@ public class CenterHomeActivity extends AppCompatActivity {
         });
     }
 
-    private class RetrieveAllLocations extends AsyncTask<Void, Void, DisasterLocation[]> {
-        @Override
-        protected DisasterLocation[] doInBackground(Void... voids) {
-            locations = db.disasterLocationsDAO().getAllLocations();
-            return locations;
-        }
-
-        @Override
-        protected void onPostExecute(DisasterLocation[] topVotes) {
-            if(locations.length > 0) {
-                adapter = new LocationAdapter(locations);
-                loadLocations.setAdapter(adapter);
-            }
-            else {
-                Toast.makeText(CenterHomeActivity.this, "There are currently no cities in need", Toast.LENGTH_LONG).show();
-            }
-        }
-    }
-
-    private class UpdateLocationNeeds extends AsyncTask<Void, Void, DisasterLocation> {
-        @Override
-        protected DisasterLocation doInBackground(Void... voids) {
-            DisasterLocation locationNeeds = db.disasterLocationsDAO().findLocation(selectedLocation.getCity(), selectedLocation.getPostalCode());
-
-            int newFoodNeeds = locationNeeds.getNumFoodCans() - Integer.parseInt(sentFood.getText().toString());
-            int newClothesNeeds = locationNeeds.getNumClothing() - Integer.parseInt(sentClothes.getText().toString());
-            int newWaterNeeds = locationNeeds.getNumWaterBottles() - Integer.parseInt(sentWater.getText().toString());
-
-            db.disasterLocationsDAO().updateLocation(new DisasterLocation(locationNeeds.getCity(),
-                    locationNeeds.getState(),
-                    locationNeeds.getPostalCode(),
-                    newFoodNeeds,
-                    newClothesNeeds,
-                    newWaterNeeds));
-            return locationNeeds;
-        }
-
-        @Override
-        protected void onPostExecute(DisasterLocation locationNeeds) {
-            sentFood.getText().clear();
-            sentClothes.getText().clear();
-            sentWater.getText().clear();
-
-            neededFood.setText(String.format(Locale.getDefault(), "%d", locationNeeds.getNumFoodCans()));
-            neededClothes.setText(String.format(Locale.getDefault(), "%d", locationNeeds.getNumClothing()));
-            neededWater.setText(String.format(Locale.getDefault(), "%d", locationNeeds.getNumWaterBottles()));
-        }
-    }
+//    private class RetrieveAllLocations extends AsyncTask<Void, Void, DisasterLocation[]> {
+//        @Override
+//        protected DisasterLocation[] doInBackground(Void... voids) {
+//            locations = db.disasterLocationsDAO().getAllLocations();
+//            return locations;
+//        }
+//
+//        @Override
+//        protected void onPostExecute(DisasterLocation[] topVotes) {
+//            if(locations.length > 0) {
+//                adapter = new LocationAdapter(locations);
+//                loadLocations.setAdapter(adapter);
+//            }
+//            else {
+//                Toast.makeText(CenterHomeActivity.this, "There are currently no cities in need", Toast.LENGTH_LONG).show();
+//            }
+//        }
+//    }
 
     private class LocationAdapter extends ArrayAdapter<DisasterLocation> {
         public LocationAdapter(DisasterLocation[] locations) {

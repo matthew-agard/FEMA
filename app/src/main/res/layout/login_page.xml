@@ -14,7 +14,7 @@
         android:layout_marginTop="8dp"
         android:layout_marginEnd="8dp"
         android:layout_marginBottom="8dp"
-        android:text="Welcome to FEMA Disaster Relief! Which one of the following users are you? "
+        android:text="Welcome to FEMA Disaster Relief! Which one of the following agents are you? "
         android:textAlignment="center"
         android:textSize="20sp"
         app:layout_constraintBottom_toTopOf="@+id/user_type"

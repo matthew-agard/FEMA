@@ -22,7 +22,6 @@ public class DriverHomeActivity extends AppCompatActivity {
     private ArrayList<DisasterLocation> selectedLocations = new ArrayList();
     private DisasterLocation[] loadedLocations;
     private Button confirmLocations, logout;
-    private FEMADatabase db;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -30,10 +29,8 @@ public class DriverHomeActivity extends AppCompatActivity {
         setContentView(R.layout.driver_home_page);
         setTitle("Driver Home Page");
 
-        db = FEMADatabase.getDatabase(this);
-
         loadLocations = findViewById(R.id.show_all_disaster_locations);
-        new RetrieveAllLocations().execute();
+//        new RetrieveAllLocations().execute();
 
         loadLocations.setChoiceMode(ListView.CHOICE_MODE_MULTIPLE);
         loadLocations.setBackgroundColor(getResources().getColor(android.R.color.background_light));
@@ -59,6 +56,9 @@ public class DriverHomeActivity extends AppCompatActivity {
             }
         });
 
+//        adapter = new LocationAdapter(loadedLocations);
+//        loadLocations.setAdapter(adapter);
+
         confirmLocations = findViewById(R.id.confirm_locations);
         confirmLocations.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -75,25 +75,6 @@ public class DriverHomeActivity extends AppCompatActivity {
                 finish();
             }
         });
-    }
-
-    private class RetrieveAllLocations extends AsyncTask<Void, Void, DisasterLocation[]> {
-        @Override
-        protected DisasterLocation[] doInBackground(Void... voids) {
-            loadedLocations = db.disasterLocationsDAO().getAllLocations();
-            return loadedLocations;
-        }
-
-        @Override
-        protected void onPostExecute(DisasterLocation[] topVotes) {
-            if(loadedLocations.length > 0) {
-                adapter = new LocationAdapter(loadedLocations);
-                loadLocations.setAdapter(adapter);
-            }
-            else {
-                Toast.makeText(DriverHomeActivity.this, "There are currently no cities in need", Toast.LENGTH_LONG).show();
-            }
-        }
     }
 
     private class LocationAdapter extends ArrayAdapter<DisasterLocation> {

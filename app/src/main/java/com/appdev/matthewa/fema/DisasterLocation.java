@@ -1,19 +1,15 @@
 package com.appdev.matthewa.fema;
 
-import android.arch.persistence.room.Entity;
-import android.support.annotation.NonNull;
-
-@Entity(primaryKeys = {"city", "state", "postalCode"})
 public class DisasterLocation {
 
-    @NonNull private String city;
-    @NonNull private String state;
-    @NonNull private long postalCode;
+    private String city;
+    private String state;
+    private long postalCode;
     private int numFoodCans;
     private int numClothing;
     private int numWaterBottles;
 
-    public DisasterLocation(@NonNull String city, @NonNull String state, @NonNull long postalCode, int numFoodCans, int numClothing, int numWaterBottles) {
+    public DisasterLocation(String city, String state,long postalCode, int numFoodCans, int numClothing, int numWaterBottles) {
         this.city = city;
         this.state = state;
         this.postalCode = postalCode;
@@ -22,30 +18,27 @@ public class DisasterLocation {
         this.numWaterBottles = numWaterBottles;
     }
 
-    @NonNull
     public String getCity() {
         return city;
     }
 
-    public void setCity(@NonNull String city) {
+    public void setCity(String city) {
         this.city = city;
     }
 
-    @NonNull
     public String getState() {
         return state;
     }
 
-    public void setState(@NonNull String state) {
+    public void setState(String state) {
         this.state = state;
     }
 
-    @NonNull
     public long getPostalCode() {
         return postalCode;
     }
 
-    public void setPostalCode(@NonNull long postalCode) {
+    public void setPostalCode(long postalCode) {
         this.postalCode = postalCode;
     }
 

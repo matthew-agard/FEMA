@@ -1,19 +1,15 @@
 package com.appdev.matthewa.fema;
 
-import android.arch.persistence.room.Entity;
-import android.support.annotation.NonNull;
-
-@Entity(primaryKeys = {"centerName", "disasterCity", "disasterState"})
 public class Donation {
-    @NonNull private String centerName;
-    @NonNull private String disasterCity;
-    @NonNull private String disasterState;
-    @NonNull private long disasterPostal;
-    @NonNull private int cansDonated;
-    @NonNull private int clothingDonated;
-    @NonNull private int waterBottlesDonated;
+    private String centerName;
+    private String disasterCity;
+    private String disasterState;
+    private long disasterPostal;
+    private int cansDonated;
+    private int clothingDonated;
+    private int waterBottlesDonated;
 
-    public Donation(@NonNull String centerName, @NonNull String disasterCity, @NonNull String disasterState, @NonNull long disasterPostal, @NonNull int cansDonated, @NonNull int clothingDonated, @NonNull int waterBottlesDonated) {
+    public Donation(String centerName, String disasterCity, String disasterState, long disasterPostal, int cansDonated, int clothingDonated, int waterBottlesDonated) {
         this.centerName = centerName;
         this.disasterCity = disasterCity;
         this.disasterState = disasterState;
@@ -23,66 +19,59 @@ public class Donation {
         this.waterBottlesDonated = waterBottlesDonated;
     }
 
-    @NonNull
     public String getCenterName() {
         return centerName;
     }
 
-    public void setCenterName(@NonNull String centerName) {
+    public void setCenterName(String centerName) {
         this.centerName = centerName;
     }
 
-    @NonNull
     public String getDisasterCity() {
         return disasterCity;
     }
 
-    public void setDisasterCity(@NonNull String disasterCity) {
+    public void setDisasterCity(String disasterCity) {
         this.disasterCity = disasterCity;
     }
 
-    @NonNull
     public String getDisasterState() {
         return disasterState;
     }
 
-    public void setDisasterState(@NonNull String disasterState) {
+    public void setDisasterState(String disasterState) {
         this.disasterState = disasterState;
     }
 
-    @NonNull
     public long getDisasterPostal() {
         return disasterPostal;
     }
 
-    public void setDisasterPostal(@NonNull long disasterPostal) {
+    public void setDisasterPostal(long disasterPostal) {
         this.disasterPostal = disasterPostal;
     }
 
-    @NonNull
     public int getCansDonated() {
         return cansDonated;
     }
 
-    public void setCansDonated(@NonNull int cansDonated) {
+    public void setCansDonated(int cansDonated) {
         this.cansDonated = cansDonated;
     }
 
-    @NonNull
     public int getClothingDonated() {
         return clothingDonated;
     }
 
-    public void setClothingDonated(@NonNull int clothingDonated) {
+    public void setClothingDonated(int clothingDonated) {
         this.clothingDonated = clothingDonated;
     }
 
-    @NonNull
     public int getWaterBottlesDonated() {
         return waterBottlesDonated;
     }
 
-    public void setWaterBottlesDonated(@NonNull int waterBottlesDonated) {
+    public void setWaterBottlesDonated(int waterBottlesDonated) {
         this.waterBottlesDonated = waterBottlesDonated;
     }
 }

@@ -11,15 +11,12 @@ import android.widget.Toast;
 public class DriverCreateAccountActivity extends AppCompatActivity {
     private EditText username, password, confirmPassword;
     private Button createAccount;
-    private FEMADatabase db;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.driver_create_account);
         setTitle("Create Truck Driver Account");
-
-        db = FEMADatabase.getDatabase(this);
 
         username = findViewById(R.id.center_name);
         password = findViewById(R.id.password);
@@ -39,24 +36,7 @@ public class DriverCreateAccountActivity extends AppCompatActivity {
         });
     }
 
-    private class CreateDriverTask extends AsyncTask<User, Void, Void> {
-        @Override
-        protected Void doInBackground(User... employees) {
-            for (User employee : employees) {
-                db.userDAO().insertUser(employee);
-            }
-
-            return null;
-        }
-
-        @Override
-        protected void onPostExecute(Void aVoid) {
-            Toast.makeText(DriverCreateAccountActivity.this, "Driver account created", Toast.LENGTH_SHORT).show();
-        }
-    }
-
     private void createAccount(String userEmail, String userPassword) {
-        new CreateDriverTask().execute(new User(userEmail, userPassword));
         username.getText().clear();
         password.getText().clear();
         confirmPassword.getText().clear();
