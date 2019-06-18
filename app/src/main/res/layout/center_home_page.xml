@@ -10,17 +10,14 @@
         android:id="@+id/water_contributed"
         android:layout_width="60dp"
         android:layout_height="50dp"
-        android:layout_marginStart="8dp"
-        android:layout_marginEnd="8dp"
-        android:layout_marginBottom="64dp"
+        android:layout_marginEnd="44dp"
+        android:layout_marginBottom="156dp"
         android:ems="10"
         android:hint="Water"
         android:inputType="number"
         android:textSize="15sp"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.595"
-        app:layout_constraintStart_toEndOf="@+id/clothes_contributed"/>
+        app:layout_constraintEnd_toEndOf="parent" />
 
     <TextView
         android:id="@+id/welcome_text"
@@ -46,119 +43,122 @@
         app:layout_constraintTop_toTopOf="parent"/>
 
     <ListView
-        android:id="@+id/show_all_disaster_locations"
+        android:id="@+id/show_all_locations"
         android:layout_width="296dp"
         android:layout_height="186dp"
         android:layout_marginStart="8dp"
         android:layout_marginTop="8dp"
         android:layout_marginEnd="8dp"
+        android:layout_marginBottom="8dp"
+        app:layout_constraintBottom_toTopOf="@+id/clothes_text"
         app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.494"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/welcome_text"
-        />
+        app:layout_constraintTop_toBottomOf="@+id/welcome_text" />
 
     <TextView
         android:id="@+id/food_needed"
         android:layout_width="60dp"
         android:layout_height="50dp"
-        android:layout_marginStart="36dp"
-        android:layout_marginBottom="44dp"
+        android:layout_marginStart="32dp"
+        android:layout_marginBottom="52dp"
         android:textAlignment="center"
         android:textSize="20sp"
         app:layout_constraintBottom_toTopOf="@+id/food_contributed"
-        app:layout_constraintStart_toStartOf="parent"/>
+        app:layout_constraintStart_toStartOf="parent" />
 
     <TextView
         android:id="@+id/clothes_needed"
         android:layout_width="60dp"
         android:layout_height="50dp"
-        android:layout_marginStart="64dp"
-        android:layout_marginBottom="8dp"
+        android:layout_marginStart="8dp"
+        android:layout_marginEnd="8dp"
+        android:layout_marginBottom="20dp"
         android:textAlignment="center"
         android:textSize="20sp"
         app:layout_constraintBottom_toTopOf="@+id/donate_text"
-        app:layout_constraintStart_toEndOf="@+id/food_needed"/>
+        app:layout_constraintEnd_toStartOf="@+id/water_needed"
+        app:layout_constraintHorizontal_bias="0.525"
+        app:layout_constraintStart_toEndOf="@+id/food_needed" />
 
     <TextView
         android:id="@+id/water_needed"
         android:layout_width="60dp"
         android:layout_height="50dp"
-        android:layout_marginStart="8dp"
-        android:layout_marginEnd="8dp"
-        android:layout_marginBottom="44dp"
+        android:layout_marginEnd="44dp"
+        android:layout_marginBottom="52dp"
         android:textAlignment="center"
         android:textSize="20sp"
         app:layout_constraintBottom_toTopOf="@+id/water_contributed"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.595"
-        app:layout_constraintStart_toEndOf="@+id/clothes_needed"/>
+        app:layout_constraintEnd_toEndOf="parent" />
 
     <EditText
         android:id="@+id/food_contributed"
         android:layout_width="60dp"
         android:layout_height="50dp"
-        android:layout_marginStart="36dp"
-        android:layout_marginBottom="64dp"
+        android:layout_marginStart="32dp"
+        android:layout_marginBottom="156dp"
         android:ems="10"
         android:hint="Food"
         android:inputType="number"
         android:textSize="15sp"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintStart_toStartOf="parent"/>
+        app:layout_constraintStart_toStartOf="parent" />
 
     <EditText
         android:id="@+id/clothes_contributed"
         android:layout_width="60dp"
         android:layout_height="50dp"
-        android:layout_marginStart="64dp"
-        android:layout_marginBottom="12dp"
+        android:layout_marginStart="8dp"
+        android:layout_marginEnd="8dp"
+        android:layout_marginBottom="48dp"
         android:ems="10"
         android:hint="Clothes"
         android:inputType="number"
         android:textSize="15sp"
         app:layout_constraintBottom_toTopOf="@+id/submit_donations"
-        app:layout_constraintStart_toEndOf="@+id/food_contributed"/>
+        app:layout_constraintEnd_toStartOf="@+id/water_contributed"
+        app:layout_constraintHorizontal_bias="0.539"
+        app:layout_constraintStart_toEndOf="@+id/food_contributed" />
 
     <TextView
         android:id="@+id/food_text"
         android:layout_width="60dp"
         android:layout_height="35dp"
-        android:layout_marginStart="36dp"
+        android:layout_marginStart="32dp"
         android:layout_marginBottom="8dp"
         android:text="Food Needed"
         android:textAlignment="center"
         android:textSize="14sp"
         app:layout_constraintBottom_toTopOf="@+id/food_needed"
-        app:layout_constraintStart_toStartOf="parent"/>
+        app:layout_constraintStart_toStartOf="parent" />
 
     <TextView
         android:id="@+id/clothes_text"
         android:layout_width="60dp"
         android:layout_height="35dp"
-        android:layout_marginStart="64dp"
-        android:layout_marginTop="8dp"
-        android:layout_marginBottom="8dp"
+        android:layout_marginStart="8dp"
+        android:layout_marginEnd="8dp"
+        android:layout_marginBottom="4dp"
         android:text="Clothes Needed"
         android:textAlignment="center"
         android:textSize="14sp"
         app:layout_constraintBottom_toTopOf="@+id/clothes_needed"
-        app:layout_constraintStart_toEndOf="@+id/food_text"
-        app:layout_constraintTop_toBottomOf="@+id/show_all_disaster_locations"/>
+        app:layout_constraintEnd_toStartOf="@+id/water_text"
+        app:layout_constraintHorizontal_bias="0.525"
+        app:layout_constraintStart_toEndOf="@+id/food_text" />
 
     <TextView
         android:id="@+id/water_text"
         android:layout_width="60dp"
         android:layout_height="35dp"
-        android:layout_marginStart="8dp"
-        android:layout_marginEnd="8dp"
+        android:layout_marginEnd="44dp"
         android:layout_marginBottom="8dp"
         android:text="Water Needed"
         android:textAlignment="center"
         android:textSize="14sp"
         app:layout_constraintBottom_toTopOf="@+id/water_needed"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.595"
-        app:layout_constraintStart_toEndOf="@+id/clothes_text"/>
+        app:layout_constraintEnd_toEndOf="parent" />
 
     <Button
         android:id="@+id/submit_donations"
@@ -166,12 +166,12 @@
         android:layout_height="wrap_content"
         android:layout_marginStart="8dp"
         android:layout_marginEnd="8dp"
-        android:layout_marginBottom="4dp"
+        android:layout_marginBottom="60dp"
         android:text="Contribute"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.501"
-        app:layout_constraintStart_toStartOf="parent"/>
+        app:layout_constraintHorizontal_bias="0.506"
+        app:layout_constraintStart_toStartOf="parent" />
 
     <TextView
         android:id="@+id/donate_text"

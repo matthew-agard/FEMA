@@ -152,8 +152,8 @@ public class LoginActivity extends AppCompatActivity {
                             startActivity(i);
                         }
                         else if (userTypePosition == 1) {
-                            Intent i = new Intent(LoginActivity.this, DriverHomeActivity.class);
-                            startActivity(i);
+//                            Intent i = new Intent(LoginActivity.this, DriverHomeActivity.class);
+//                            startActivity(i);
                         }
                         else {
                             Intent i = new Intent(LoginActivity.this, AgentHomeActivity.class);
@@ -162,7 +162,7 @@ public class LoginActivity extends AppCompatActivity {
                     }
 
                     else
-                        Toast.makeText(LoginActivity.this, "Invalid login credentials.", Toast.LENGTH_SHORT).show();
+                        Toast.makeText(LoginActivity.this, "Invalid login credentials", Toast.LENGTH_SHORT).show();
                 }
             }
 
