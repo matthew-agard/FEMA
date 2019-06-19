@@ -1,11 +1,9 @@
 package com.appdev.matthewa.fema;
 
 import android.content.Intent;
-import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
-import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
@@ -14,20 +12,15 @@ import android.widget.EditText;
 import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
-
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
-
-import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.Map;
 
 public class LoginActivity extends AppCompatActivity {
@@ -84,6 +77,13 @@ public class LoginActivity extends AppCompatActivity {
         });
     }
 
+    @Override
+    protected void onResume() {
+        super.onResume();
+        username.getText().clear();
+        password.getText().clear();
+    }
+
     private void verifyAccountCreation(int userTypePosition) {
         if(userTypePosition != 2) {
             createAccount.setVisibility(View.VISIBLE);
@@ -97,9 +97,6 @@ public class LoginActivity extends AppCompatActivity {
     }
 
     private void createUserAccount() {
-        username.getText().clear();
-        password.getText().clear();
-
         if(userTypePosition == 0) {
             Intent i = new Intent(LoginActivity.this, CenterCreateAccountActivity.class);
             startActivity(i);
@@ -116,23 +113,24 @@ public class LoginActivity extends AppCompatActivity {
             public void onComplete(@NonNull Task<AuthResult> task) {
                 if (task.isSuccessful()) {
                     if(userTypePosition == 0) {
-                        DatabaseReference getCenter = database.getReference("Community Centers/" + username.getText().toString());
+                        DatabaseReference getCenter = database.getReference("Community Centers").child(username.getText().toString());
                         verifyUser(getCenter);
                     }
 
                     else if (userTypePosition == 1) {
-                        DatabaseReference getDriver = database.getReference("Drivers/"  + username.getText().toString());
+                        DatabaseReference getDriver = database.getReference("Drivers").child(username.getText().toString());
                         verifyUser(getDriver);
                     }
 
                     else {
-                        DatabaseReference getAgent = database.getReference("Agents/" + username.getText().toString());
+                        DatabaseReference getAgent = database.getReference("Agents").child(username.getText().toString());
                         verifyUser(getAgent);
                     }
                 }
 
-                else
+                else {
                     Toast.makeText(LoginActivity.this, "Authentication failed.", Toast.LENGTH_SHORT).show();
+                }
             }
         });
     }
@@ -142,27 +140,27 @@ public class LoginActivity extends AppCompatActivity {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                 Map<String, String> userData = (Map) dataSnapshot.getValue();
-                if(userData != null) {
-                    if(userData.get("password").equals(password.getText().toString())) {
-                        username.getText().clear();
-                        password.getText().clear();
-
-                        if(userTypePosition == 0) {
-                            Intent i = new Intent(LoginActivity.this, CenterHomeActivity.class);
-                            startActivity(i);
-                        }
-                        else if (userTypePosition == 1) {
+                if(userData != null && userData.get("password").equals(password.getText().toString())) {
+                    if(userTypePosition == 0) {
+                        Intent i = new Intent(LoginActivity.this, CenterHomeActivity.class);
+                        Bundle extras = new Bundle();
+                        extras.putString("Username", username.getText().toString());
+                        extras.putString("Center Name", userData.get("centerName"));
+                        i.putExtras(extras);
+                        startActivity(i);
+                    }
+                    else if (userTypePosition == 1) {
 //                            Intent i = new Intent(LoginActivity.this, DriverHomeActivity.class);
 //                            startActivity(i);
-                        }
-                        else {
-                            Intent i = new Intent(LoginActivity.this, AgentHomeActivity.class);
-                            startActivity(i);
-                        }
                     }
+                    else {
+                        Intent i = new Intent(LoginActivity.this, AgentHomeActivity.class);
+                        startActivity(i);
+                    }
+                }
 
-                    else
-                        Toast.makeText(LoginActivity.this, "Invalid login credentials", Toast.LENGTH_SHORT).show();
+                else {
+                    Toast.makeText(LoginActivity.this, "Invalid login credentials.", Toast.LENGTH_SHORT).show();
                 }
             }
 

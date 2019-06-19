@@ -13,29 +13,24 @@ import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
-
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
-
-import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.HashMap;
-import java.util.Locale;
 import java.util.Map;
 
 public class CenterHomeActivity extends AppCompatActivity {
     private ListView loadLocations;
     private LocationsAdapter adapter;
-    private String selectedLocation = "";
+    private String selectedLocation = "", centerName, centerUsername;
     private String[] locations;
     private TextView neededFood, neededClothes, neededWater;
     private EditText sentFood, sentClothes, sentWater;
     private Button submitDonations, logout;
     private FirebaseDatabase database;
-    private DatabaseReference getLocations, chosenLocation;
+    private DatabaseReference getLocations, updateInventory, chosenLocation;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -47,27 +42,28 @@ public class CenterHomeActivity extends AppCompatActivity {
         neededFood = findViewById(R.id.food_needed);
         neededClothes = findViewById(R.id.clothes_needed);
         neededWater = findViewById(R.id.water_needed);
+        sentFood = findViewById(R.id.food_contributed);
+        sentClothes = findViewById(R.id.clothes_contributed);
+        sentWater = findViewById(R.id.water_contributed);
         loadLocations = findViewById(R.id.show_all_locations);
         getLocations = database.getReference("Disaster Locations");
+        Bundle extras = getIntent().getExtras();
+        centerUsername = extras.getString("Username");
+        centerName = extras.getString("Center Name");
 
         populateLocationsList();
 
         loadLocations.setChoiceMode(ListView.CHOICE_MODE_SINGLE);
-        loadLocations.setBackgroundColor(getResources().getColor(android.R.color.background_light));
         loadLocations.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 if (!selectedLocation.equals(adapter.getItem(position))) {
+                    loadLocations.setSelector(android.R.color.darker_gray);
                     selectedLocation = adapter.getItem(position);
-                    loadLocations.setBackgroundColor(getResources().getColor(android.R.color.background_light));
-//                    parent.setBackgroundColor(getResources().getColor(android.R.color.background_light));
-//                    view.setBackgroundColor(getResources().getColor(android.R.color.darker_gray));
-//                    loadLocations.setItemChecked(position, true);
                     displayLocationNeeds();
                 }
-
                 else {
-                    loadLocations.setItemChecked(position, false);
+                    loadLocations.setSelector(android.R.color.background_light);
                     selectedLocation = "";
                     neededFood.setText(null);
                     neededClothes.setText(null);
@@ -76,15 +72,18 @@ public class CenterHomeActivity extends AppCompatActivity {
             }
         });
 
-        sentFood = findViewById(R.id.food_contributed);
-        sentClothes = findViewById(R.id.clothes_contributed);
-        sentWater = findViewById(R.id.water_contributed);
-
         submitDonations = findViewById(R.id.submit_donations);
         submitDonations.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                deductDisasterNeed();
+                fulfillDonation();
+                deductCenterInventory();
 
+                Toast.makeText(CenterHomeActivity.this, "Thank you for your generosity!", Toast.LENGTH_SHORT).show();
+                sentFood.getText().clear();
+                sentClothes.getText().clear();
+                sentWater.getText().clear();
             }
         });
 
@@ -108,7 +107,6 @@ public class CenterHomeActivity extends AppCompatActivity {
                     adapter = new LocationsAdapter(locations);
                     loadLocations.setAdapter(adapter);
                 }
-
                 else {
                     Toast.makeText(CenterHomeActivity.this, "No locations in need", Toast.LENGTH_SHORT).show();
                 }
@@ -122,15 +120,70 @@ public class CenterHomeActivity extends AppCompatActivity {
     }
 
     private void displayLocationNeeds() {
-        chosenLocation = database.getReference("Disaster Locations/" + selectedLocation);
+        DatabaseReference chosenLocation = database.getReference("Disaster Locations/" + selectedLocation);
         chosenLocation.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
-                Map<String, Long> values = (Map) dataSnapshot.getValue();
-                if(values != null) {
-                    neededFood.setText(String.valueOf(values.get("neededFood").toString()));
-                    neededClothes.setText(String.valueOf(values.get("neededClothes").toString()));
-                    neededWater.setText(String.valueOf(values.get("neededWater").toString()));
+                Map<String, Long> location = (Map) dataSnapshot.getValue();
+                if(location != null) {
+                    neededFood.setText(String.valueOf(location.get("neededFood")));
+                    neededClothes.setText(String.valueOf(location.get("neededClothes")));
+                    neededWater.setText(String.valueOf(location.get("neededWater")));
+                }
+            }
+
+            @Override
+            public void onCancelled(DatabaseError error) {
+                Log.w("CenterHomeActivity.java", "Failed to read value.", error.toException());
+            }
+        });
+    }
+
+    private void deductDisasterNeed() {
+        chosenLocation = database.getReference("Disaster Locations").child(selectedLocation);
+        chosenLocation.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                Map<String, Long> location = (Map) dataSnapshot.getValue();
+                if(location != null) {
+                    long updatedFood = location.get("neededFood") - Long.parseLong(sentFood.getText().toString());
+                    long updatedClothes = location.get("neededClothes") - Long.parseLong(sentClothes.getText().toString());
+                    long updatedWater = location.get("neededWater") - Long.parseLong(sentWater.getText().toString());
+
+                    chosenLocation.child("neededFood").setValue(updatedFood);
+                    chosenLocation.child("neededClothes").setValue(updatedClothes);
+                    chosenLocation.child("neededWater").setValue(updatedWater);
+                }
+            }
+
+            @Override
+            public void onCancelled(DatabaseError error) {
+                Log.w("CenterHomeActivity.java", "Failed to read value.", error.toException());
+            }
+        });
+    }
+
+    private void fulfillDonation() {
+        DatabaseReference createDonation = database.getReference("Donations").child(centerName).child(selectedLocation);
+        createDonation.child("donatedFood").setValue(Long.parseLong(sentFood.getText().toString()));
+        createDonation.child("donatedClothes").setValue(Long.parseLong(sentClothes.getText().toString()));
+        createDonation.child("donatedWater").setValue(Long.parseLong(sentWater.getText().toString()));
+    }
+
+    private void deductCenterInventory() {
+        updateInventory = database.getReference("Community Centers").child(centerUsername);
+        updateInventory.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                Map<String, Long> center = (Map) dataSnapshot.getValue();
+                if(center != null) {
+                    long updatedFood = center.get("inventoryFood") - Long.parseLong(sentFood.getText().toString());
+                    long updatedClothes = center.get("inventoryClothes") - Long.parseLong(sentClothes.getText().toString());
+                    long updatedWater = center.get("inventoryWater") - Long.parseLong(sentWater.getText().toString());
+
+                    updateInventory.child("inventoryFood").setValue(updatedFood);
+                    updateInventory.child("inventoryClothes").setValue(updatedClothes);
+                    updateInventory.child("inventoryWater").setValue(updatedWater);
                 }
             }
 
