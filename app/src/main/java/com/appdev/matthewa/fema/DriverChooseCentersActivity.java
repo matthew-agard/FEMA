@@ -18,41 +18,49 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
-
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Map;
 
-public class DriverHomeActivity extends AppCompatActivity {
-    private ListView loadLocations;
+public class DriverChooseCentersActivity extends AppCompatActivity {
+    private ListView loadCenters;
     private LocationsAdapter adapter;
-    private String selectedLocation = "";
-    private String[] locations;
+    private ArrayList<String> selectedCenters = new ArrayList<>();
+    private String[] centers;
     private Button confirmLocations, logout;
     private FirebaseDatabase database;
-    private DatabaseReference getLocations;
+    private DatabaseReference getCenters;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.driver_home_page);
-        setTitle("Driver Home Page");
+        setTitle("Driver Centers Page");
 
         database = FirebaseDatabase.getInstance();
-        getLocations = database.getReference("Disaster Locations");
-        populateLocationsList();
+        getCenters = database.getReference("Community Centers");
+        populateCentersList();
 
-        loadLocations = findViewById(R.id.show_all_centers);
-        loadLocations.setChoiceMode(ListView.CHOICE_MODE_SINGLE);
-        loadLocations.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+        loadCenters = findViewById(R.id.show_all_centers);
+        loadCenters.setChoiceMode(ListView.CHOICE_MODE_SINGLE);
+        loadCenters.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                if (!selectedLocation.equals(adapter.getItem(position))) {
-                    loadLocations.setSelector(android.R.color.darker_gray);
-                    selectedLocation = adapter.getItem(position);
+                String chosenLocation = adapter.getItem(position);
+
+                if (selectedCenters.contains(chosenLocation)) {
+                    loadCenters.setSelector(android.R.color.background_light);
+                    selectedCenters.remove(chosenLocation);
                 }
+
                 else {
-                    loadLocations.setSelector(android.R.color.background_light);
-                    selectedLocation = "";
+                    if((selectedCenters.size()) < 3) {
+                        loadCenters.setSelector(android.R.color.darker_gray);
+                        selectedCenters.add(chosenLocation);
+                    }
+
+                    else
+                        Toast.makeText(DriverChooseCentersActivity.this, "Deselect an existing location selection to add a new location", Toast.LENGTH_LONG).show();
                 }
             }
         });
@@ -61,7 +69,7 @@ public class DriverHomeActivity extends AppCompatActivity {
         confirmLocations.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent i = new Intent(DriverHomeActivity.this, DriverChooseCentersActivity.class);
+                Intent i = new Intent(DriverChooseCentersActivity.this, DriverMapsActivity.class);
                 startActivity(i);
             }
         });
@@ -75,32 +83,32 @@ public class DriverHomeActivity extends AppCompatActivity {
         });
     }
 
-    private void populateLocationsList() {
-        getLocations.addValueEventListener(new ValueEventListener() {
+    private void populateCentersList() {
+        getCenters.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
                 Map<String, Object> values = (Map) dataSnapshot.getValue();
                 if(values != null) {
                     Object[] valueObjects = values.keySet().toArray();
-                    locations = Arrays.copyOf(valueObjects, valueObjects.length, String[].class);
-                    adapter = new LocationsAdapter(locations);
-                    loadLocations.setAdapter(adapter);
+                    centers = Arrays.copyOf(valueObjects, valueObjects.length, String[].class);
+                    adapter = new LocationsAdapter(centers);
+                    loadCenters.setAdapter(adapter);
                 }
                 else {
-                    Toast.makeText(DriverHomeActivity.this, "No locations in need", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(DriverChooseCentersActivity.this, "No centers listed for this disaster location", Toast.LENGTH_SHORT).show();
                 }
             }
 
             @Override
             public void onCancelled(DatabaseError error) {
-                Log.w("DriverHomeActivity.java", "Failed to read value.", error.toException());
+                Log.w("DriverChooseCentersAct", "Failed to read value.", error.toException());
             }
         });
     }
 
     private class LocationsAdapter extends ArrayAdapter<String> {
-        private LocationsAdapter(String[] locations) {
-            super(DriverHomeActivity.this, 0, locations);
+        private LocationsAdapter(String[] centers) {
+            super(DriverChooseCentersActivity.this, 0, centers);
         }
 
         @Override
