@@ -45,14 +45,14 @@ public class CenterHomeActivity extends AppCompatActivity {
         sentFood = findViewById(R.id.food_contributed);
         sentClothes = findViewById(R.id.clothes_contributed);
         sentWater = findViewById(R.id.water_contributed);
-        loadLocations = findViewById(R.id.show_all_locations);
-        getLocations = database.getReference("Disaster Locations");
         Bundle extras = getIntent().getExtras();
         centerUsername = extras.getString("Username");
         centerName = extras.getString("Center Name");
 
+        getLocations = database.getReference("Disaster Locations");
         populateLocationsList();
 
+        loadLocations = findViewById(R.id.show_all_centers);
         loadLocations.setChoiceMode(ListView.CHOICE_MODE_SINGLE);
         loadLocations.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
@@ -164,7 +164,7 @@ public class CenterHomeActivity extends AppCompatActivity {
     }
 
     private void fulfillDonation() {
-        DatabaseReference createDonation = database.getReference("Donations").child(centerName).child(selectedLocation);
+        DatabaseReference createDonation = database.getReference("Donations").child(selectedLocation).child(centerName);
         createDonation.child("donatedFood").setValue(Long.parseLong(sentFood.getText().toString()));
         createDonation.child("donatedClothes").setValue(Long.parseLong(sentClothes.getText().toString()));
         createDonation.child("donatedWater").setValue(Long.parseLong(sentWater.getText().toString()));

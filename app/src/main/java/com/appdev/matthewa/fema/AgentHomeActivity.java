@@ -46,7 +46,7 @@ public class AgentHomeActivity extends AppCompatActivity {
         updatedClothes = findViewById(R.id.clothes_contributed);
         updatedWater = findViewById(R.id.water_contributed);
 
-        loadLocations = findViewById(R.id.show_all_locations);
+        loadLocations = findViewById(R.id.show_all_centers);
         populateLocationsList();
 
         loadLocations.setChoiceMode(ListView.CHOICE_MODE_SINGLE);

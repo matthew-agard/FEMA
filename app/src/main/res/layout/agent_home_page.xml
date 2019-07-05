@@ -43,7 +43,7 @@
         app:layout_constraintTop_toTopOf="parent"/>
 
     <ListView
-        android:id="@+id/show_all_locations"
+        android:id="@+id/show_all_centers"
         android:layout_width="309dp"
         android:layout_height="188dp"
         android:layout_marginStart="8dp"
@@ -200,7 +200,7 @@
         android:textSize="20dp"
         app:layout_constraintBottom_toTopOf="@+id/clothes_text"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/show_all_locations"
+        app:layout_constraintTop_toBottomOf="@+id/show_all_centers"
         app:layout_constraintVertical_bias="0.1" />
 
 </android.support.constraint.ConstraintLayout>
