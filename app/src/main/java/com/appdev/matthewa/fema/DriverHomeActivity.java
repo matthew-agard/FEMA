@@ -62,6 +62,7 @@ public class DriverHomeActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 Intent i = new Intent(DriverHomeActivity.this, DriverChooseCentersActivity.class);
+                i.putExtra("Disaster Location", selectedLocation);
                 startActivity(i);
             }
         });

@@ -26,6 +26,7 @@ public class DriverChooseCentersActivity extends AppCompatActivity {
     private ListView loadCenters;
     private LocationsAdapter adapter;
     private ArrayList<String> selectedCenters = new ArrayList<>();
+    private String selectedLocation;
     private String[] centers;
     private Button confirmLocations, logout;
     private FirebaseDatabase database;
@@ -34,15 +35,15 @@ public class DriverChooseCentersActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.driver_home_page);
+        setContentView(R.layout.driver_choose_centers);
         setTitle("Driver Centers Page");
 
         database = FirebaseDatabase.getInstance();
-        getCenters = database.getReference("Community Centers");
-        populateCentersList();
+        selectedLocation = getIntent().getStringExtra("Disaster Location");
+        getCenters = database.getReference("Donations").child(selectedLocation);
+        populateCentersLocationsList();
 
         loadCenters = findViewById(R.id.show_all_centers);
-        loadCenters.setChoiceMode(ListView.CHOICE_MODE_SINGLE);
         loadCenters.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
@@ -50,12 +51,14 @@ public class DriverChooseCentersActivity extends AppCompatActivity {
 
                 if (selectedCenters.contains(chosenLocation)) {
                     loadCenters.setSelector(android.R.color.background_light);
+                    view.setBackgroundColor(getResources().getColor(android.R.color.background_light));
                     selectedCenters.remove(chosenLocation);
                 }
 
                 else {
                     if((selectedCenters.size()) < 3) {
                         loadCenters.setSelector(android.R.color.darker_gray);
+                        view.setBackgroundColor(getResources().getColor(android.R.color.darker_gray));
                         selectedCenters.add(chosenLocation);
                     }
 
@@ -83,7 +86,7 @@ public class DriverChooseCentersActivity extends AppCompatActivity {
         });
     }
 
-    private void populateCentersList() {
+    private void populateCentersLocationsList() {
         getCenters.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
@@ -95,7 +98,7 @@ public class DriverChooseCentersActivity extends AppCompatActivity {
                     loadCenters.setAdapter(adapter);
                 }
                 else {
-                    Toast.makeText(DriverChooseCentersActivity.this, "No centers listed for this disaster location", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(DriverChooseCentersActivity.this, "No center locations listed for this disaster location", Toast.LENGTH_SHORT).show();
                 }
             }
 

@@ -39,7 +39,8 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.464"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/max_locations_text" />
+        app:layout_constraintTop_toBottomOf="@+id/max_locations_text"
+        android:choiceMode="multipleChoice"/>
 
     <Button
         android:id="@+id/confirm_location"
@@ -58,16 +59,15 @@
 
     <TextView
         android:id="@+id/max_locations_text"
-        android:layout_width="337dp"
-        android:layout_height="53dp"
+        android:layout_width="379dp"
+        android:layout_height="87dp"
         android:layout_marginStart="8dp"
-        android:layout_marginTop="92dp"
+        android:layout_marginTop="76dp"
         android:layout_marginEnd="8dp"
-        android:text="Please choose a disaster location to which you will deliver supplies"
+        android:text="Please choose up to 3 community center locations from which to pick up supplies for your selected disaster location"
         android:textAlignment="center"
         android:textSize="20sp"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.482"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/welcome_text" />
 

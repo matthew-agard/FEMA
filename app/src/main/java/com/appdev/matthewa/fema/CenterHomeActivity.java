@@ -22,6 +22,7 @@ import java.util.Arrays;
 import java.util.Map;
 
 public class CenterHomeActivity extends AppCompatActivity {
+    private Bundle extras;
     private ListView loadLocations;
     private LocationsAdapter adapter;
     private String selectedLocation = "", centerName, centerUsername;
@@ -45,7 +46,7 @@ public class CenterHomeActivity extends AppCompatActivity {
         sentFood = findViewById(R.id.food_contributed);
         sentClothes = findViewById(R.id.clothes_contributed);
         sentWater = findViewById(R.id.water_contributed);
-        Bundle extras = getIntent().getExtras();
+        extras = getIntent().getExtras();
         centerUsername = extras.getString("Username");
         centerName = extras.getString("Center Name");
 
@@ -81,9 +82,9 @@ public class CenterHomeActivity extends AppCompatActivity {
                 deductCenterInventory();
 
                 Toast.makeText(CenterHomeActivity.this, "Thank you for your generosity!", Toast.LENGTH_SHORT).show();
-                sentFood.getText().clear();
-                sentClothes.getText().clear();
-                sentWater.getText().clear();
+//                sentFood.getText().clear();
+//                sentClothes.getText().clear();
+//                sentWater.getText().clear();
             }
         });
 
