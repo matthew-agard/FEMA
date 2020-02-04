@@ -1,10 +1,8 @@
 <resources>
     <string name="app_name">FEMA</string>
-    <string name="title_activity_driver_maps">Map</string>
 
     <string-array name="user_type">
         <item>Community Center</item>
-        <item>Truck Driver</item>
         <item>FEMA Agent</item>
     </string-array>
 

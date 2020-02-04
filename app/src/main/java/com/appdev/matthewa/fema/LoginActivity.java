@@ -85,7 +85,7 @@ public class LoginActivity extends AppCompatActivity {
     }
 
     private void verifyAccountCreation(int userTypePosition) {
-        if(userTypePosition != 2) {
+        if(userTypePosition == 0) {
             createAccount.setVisibility(View.VISIBLE);
             createAccount.setClickable(true);
         }
@@ -101,10 +101,6 @@ public class LoginActivity extends AppCompatActivity {
             Intent i = new Intent(LoginActivity.this, CenterCreateAccountActivity.class);
             startActivity(i);
         }
-        else {
-            Intent i = new Intent(LoginActivity.this, DriverCreateAccountActivity.class);
-            startActivity(i);
-        }
     }
 
     private void signInUser(final String usernameStr, String passwordStr) {
@@ -115,11 +111,6 @@ public class LoginActivity extends AppCompatActivity {
                     if(userTypePosition == 0) {
                         DatabaseReference getCenter = database.getReference("Community Centers").child(username.getText().toString());
                         verifyUser(getCenter);
-                    }
-
-                    else if (userTypePosition == 1) {
-                        DatabaseReference getDriver = database.getReference("Drivers").child(username.getText().toString());
-                        verifyUser(getDriver);
                     }
 
                     else {
@@ -147,10 +138,6 @@ public class LoginActivity extends AppCompatActivity {
                         extras.putString("Username", username.getText().toString());
                         extras.putString("Center Name", userData.get("centerName"));
                         i.putExtras(extras);
-                        startActivity(i);
-                    }
-                    else if (userTypePosition == 1) {
-                        Intent i = new Intent(LoginActivity.this, DriverHomeActivity.class);
                         startActivity(i);
                     }
                     else {

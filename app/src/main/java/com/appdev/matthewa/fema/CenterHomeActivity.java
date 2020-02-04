@@ -82,9 +82,6 @@ public class CenterHomeActivity extends AppCompatActivity {
                 deductCenterInventory();
 
                 Toast.makeText(CenterHomeActivity.this, "Thank you for your generosity!", Toast.LENGTH_SHORT).show();
-//                sentFood.getText().clear();
-//                sentClothes.getText().clear();
-//                sentWater.getText().clear();
             }
         });
 
@@ -93,6 +90,26 @@ public class CenterHomeActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 finish();
+            }
+        });
+    }
+
+    private void displayLocationNeeds() {
+        DatabaseReference chosenLocation = database.getReference("Disaster Locations/" + selectedLocation);
+        chosenLocation.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                Map<String, Long> location = (Map) dataSnapshot.getValue();
+                if(location != null) {
+                    neededFood.setText(String.valueOf(location.get("neededFood")));
+                    neededClothes.setText(String.valueOf(location.get("neededClothes")));
+                    neededWater.setText(String.valueOf(location.get("neededWater")));
+                }
+            }
+
+            @Override
+            public void onCancelled(DatabaseError error) {
+                Log.w("CenterHomeActivity.java", "Failed to read value.", error.toException());
             }
         });
     }
@@ -110,26 +127,6 @@ public class CenterHomeActivity extends AppCompatActivity {
                 }
                 else {
                     Toast.makeText(CenterHomeActivity.this, "No locations in need", Toast.LENGTH_SHORT).show();
-                }
-            }
-
-            @Override
-            public void onCancelled(DatabaseError error) {
-                Log.w("CenterHomeActivity.java", "Failed to read value.", error.toException());
-            }
-        });
-    }
-
-    private void displayLocationNeeds() {
-        DatabaseReference chosenLocation = database.getReference("Disaster Locations/" + selectedLocation);
-        chosenLocation.addValueEventListener(new ValueEventListener() {
-            @Override
-            public void onDataChange(DataSnapshot dataSnapshot) {
-                Map<String, Long> location = (Map) dataSnapshot.getValue();
-                if(location != null) {
-                    neededFood.setText(String.valueOf(location.get("neededFood")));
-                    neededClothes.setText(String.valueOf(location.get("neededClothes")));
-                    neededWater.setText(String.valueOf(location.get("neededWater")));
                 }
             }
 
